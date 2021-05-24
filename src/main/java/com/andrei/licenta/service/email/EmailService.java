@@ -34,14 +34,14 @@ public class EmailService {
         properties.put(SMTP_PORT, DEFAULT_PORT);
 //        properties.put(SMTP_STARTTLS_ENABLE, true);
 //        properties.put(SMTP_STARTTLS_REQUIRED, true);
-        properties.put("mail.debug", true);
-        properties.put("mail.smtp.socketFactory.port", "465");
+        properties.put(DEBUG, true);
+        properties.put("mail.smtp.socketFactory.port", DEFAULT_PORT);
         properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         Authenticator auth = new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("apikey",
-                        "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");
+                return new PasswordAuthentication(API_KEY,
+                        PASSWORD);
             }
         };
 
