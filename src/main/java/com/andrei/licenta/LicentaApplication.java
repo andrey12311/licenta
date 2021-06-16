@@ -23,11 +23,7 @@ public class LicentaApplication {
 		SpringApplication.run(LicentaApplication.class, args);
 		//noinspection ResultOfMethodCallIgnored
 		new File(FileConstant.ANUNT_FOLDER).mkdirs();
-	}
 
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder(){
-		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
@@ -42,9 +38,14 @@ public class LicentaApplication {
 				"Access-Control-Request-Method", "Access-Control-Request-Headers","Set-Cookie","Cookie"));
 		corsConfiguration.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Jwt-Token", "Authorization",
 				"Access-Control-Allow-Origin", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials","Set-Cookie","Cookie"));
-		corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
 		urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 
 		return new CorsFilter(urlBasedCorsConfigurationSource);
+	}
+
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder(){
+		return new BCryptPasswordEncoder();
 	}
 }

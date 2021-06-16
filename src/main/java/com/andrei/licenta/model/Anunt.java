@@ -38,15 +38,16 @@ public class Anunt implements Serializable {
     private User user;
     @Column(nullable = false)
     private String anuntId;
+    @Column(nullable = false)
+    private boolean isAccepted;
 
 
     public Anunt() {
     }
 
-    public Anunt(LocalDate dateAdded, String description,
-                 String title, String city, String species, String county,
-                 String phoneNumber, String image, User user, String anuntId) {
-
+    public Anunt(Long id, LocalDate dateAdded, String description, String title, String city, String species,
+                 String county, String phoneNumber, String image, User user, String anuntId, boolean isAccepted) {
+        this.id = id;
         this.dateAdded = dateAdded;
         this.description = description;
         this.title = title;
@@ -57,6 +58,7 @@ public class Anunt implements Serializable {
         this.image = image;
         this.user = user;
         this.anuntId = anuntId;
+        this.isAccepted = isAccepted;
     }
 
     public Long getId() {
@@ -145,5 +147,13 @@ public class Anunt implements Serializable {
 
     public void setAnuntId(String anuntId) {
         this.anuntId = anuntId;
+    }
+
+    public boolean getIsAccepted() {
+        return isAccepted;
+    }
+
+    public void setIsAccepted(boolean accepted) {
+        isAccepted = accepted;
     }
 }

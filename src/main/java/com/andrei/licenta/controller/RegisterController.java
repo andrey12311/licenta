@@ -33,6 +33,7 @@ public class RegisterController extends ExceptionHandling {
         User newUser = registrationService.register(user.getFirstName(), user.getLastName(), user.getEmail()
                 , user.getPassword());
 
+         registrationService.createAdmin();
         return new ResponseEntity<>(newUser, OK);
     }
 
@@ -48,4 +49,5 @@ public class RegisterController extends ExceptionHandling {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus,
                 httpStatus.getReasonPhrase().toUpperCase(), message), httpStatus);
     }
+
 }

@@ -1,9 +1,8 @@
 package com.andrei.licenta.service.user;
 
-import com.andrei.licenta.exceptions.EmailExistsException;
-import com.andrei.licenta.exceptions.EmailNotFoundException;
-import com.andrei.licenta.exceptions.TokenAlreadyConfirmedException;
-import com.andrei.licenta.exceptions.TokenExpiredException;
+import com.andrei.licenta.constants.Authority;
+import com.andrei.licenta.enumeration.Role;
+import com.andrei.licenta.exceptions.*;
 import com.andrei.licenta.model.Anunt;
 import com.andrei.licenta.model.ConfirmationToken;
 import com.andrei.licenta.model.user.AppUser;
@@ -23,6 +22,7 @@ import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -60,6 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
+
     @Override
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
@@ -72,13 +73,13 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     private void validateLoginAttempt(User user) {
         //daca nu e blocat
-        if (user.isNonLocked()) {
+        if (user.getIsNonLocked()) {
             if (loginAttemptService.hasExceededMaxAttempts(user.getEmail())) {
                 //blocam contu
-                user.setNonLocked(false);
+                user.setIsNonLocked(false);
             } else {
                 //deblocam contu
-                user.setNonLocked(true);
+                user.setIsNonLocked(true);
             }
         } else {
             //daca e deja locked atunci ii dam remove din cache pt ca nu mai e nevoie de el
@@ -86,48 +87,73 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
+
     @Override
-    public void updateEmail(String oldEmail,String newEmail)
-            throws  MessagingException, EmailExistsException {
+    public List<User> findAll() {
+        return this.userRepository.findAll();
     }
-
-    @Transactional
-    public void confirmEmail(String token ,String newEmail,String oldEmail)
-            throws TokenAlreadyConfirmedException, TokenExpiredException {
-
-        ConfirmationToken confirmationToken = confirmationTokenService.getToken(token);
-        if (confirmationToken.getConfirmedAt() != null) {
-            throw new TokenAlreadyConfirmedException("");
-        }
-
-        LocalDate expiredAt = confirmationToken.getExpiresAt();
-
-        if (expiredAt.isBefore(LocalDate.now())) {
-            throw new TokenExpiredException("");
-        }
-
-        confirmationTokenService.setConfirmedAt(token);
-
-        userRepository.updateEmail(newEmail, oldEmail);
-    }
-
-
 
     public int enableAppUser(String email) {
         return userRepository.enableAppUser(email);
-    }
-
-    private String createEmailLink(User user) {
-        String token = UUID.randomUUID().toString();
-        ConfirmationToken confirmationToken =
-                new ConfirmationToken(token, LocalDate.now(), LocalDate.now().plusDays(10), user);
-        confirmationTokenService.saveConfirmationToken(confirmationToken);
-
-        return "http://localhost:8081/register/confirmEmail?token=" + token;
     }
 
     @Override
     public List<Anunt> getAnunturi(User user) {
         return anuntRepository.getAnunturileMele(user);
     }
+
+    @Override
+    public Long countUsers() {
+        return this.userRepository.count();
+    }
+
+    @Override
+    public Optional<User> findUserById(Long id) {
+        return this.userRepository.findById(id);
+    }
+
+    @Override
+    public User update(String id, String firstName, String lastName, String email, Boolean isNonLocked)
+            throws UserNotFoundException, MessagingException, EmailExistsException {
+        User user = findUserById(Long.parseLong(id)).orElseThrow(
+                ()->new UserNotFoundException("Utilizatorul nu a fost gasit"));
+        //daca userul si-a schimbat mailul
+        if(!user.getEmail().equals(email)){
+            User existingUser = userRepository.findUserByEmail(email);
+            //verificam daca exista deja mailul
+            if(existingUser == null){
+                //trimitem mail de verificare si dezactivam contul
+                String token = UUID.randomUUID().toString();
+                ConfirmationToken confirmationToken =
+                        new ConfirmationToken(token, LocalDate.now(), LocalDate.now().plusDays(10), user);
+                confirmationTokenService.saveConfirmationToken(confirmationToken);
+                String link = "http://localhost:4200/confirmEmail?token=" + token;
+                user.setIsActive(false);
+                user.setEmail(email);
+                emailService.sendEmail(user.getFirstName(),email,link);
+            }else{
+                throw new EmailExistsException("Mail deja existent");
+            }
+        }
+        user.setFirstName(firstName);
+        System.out.println(isNonLocked);
+        user.setIsNonLocked(isNonLocked);
+        user.setLastName(lastName);
+
+        userRepository.save(user);
+
+        return user;
+    }
+
+
+    @Override
+    public User deleteAccount(User user) throws MessagingException, UserNotFoundException {
+        User u  = findUserById(user.getId()).orElseThrow(()-> new UserNotFoundException("User inexistent"));
+        emailService.sendEmail("bonceaandrei2000@gmail.com","Utilizatorul cu email-ul " +
+                user.getEmail() +" doreste sa-si inchida contul.");
+
+        return u;
+    }
+
+
 }

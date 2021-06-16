@@ -1,14 +1,13 @@
 package com.andrei.licenta.service.user;
 
-import com.andrei.licenta.exceptions.EmailExistsException;
-import com.andrei.licenta.exceptions.EmailNotFoundException;
-import com.andrei.licenta.exceptions.TokenAlreadyConfirmedException;
-import com.andrei.licenta.exceptions.TokenExpiredException;
+import com.andrei.licenta.exceptions.*;
 import com.andrei.licenta.model.Anunt;
 import com.andrei.licenta.model.user.User;
+import org.apache.juli.logging.Log;
 
 import javax.mail.MessagingException;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     User findUserByEmail(String email);
@@ -17,9 +16,17 @@ public interface UserService {
 
     int enableAppUser(String email);
 
-    void updateEmail(String oldEmail,String newEmail)
-            throws EmailNotFoundException, MessagingException, EmailExistsException;
-    void confirmEmail(String token ,String newEmail,String oldEmail)
-            throws TokenAlreadyConfirmedException, TokenExpiredException;
     List<Anunt> getAnunturi(User user);
+
+    List<User> findAll();
+
+    Long countUsers();
+
+    Optional<User> findUserById(Long id);
+
+    User update(String id, String firstName, String lastName, String email, Boolean isNonLocked)
+            throws UserNotFoundException, MessagingException, EmailExistsException;
+
+    User deleteAccount(User user) throws MessagingException, UserNotFoundException;
+
 }

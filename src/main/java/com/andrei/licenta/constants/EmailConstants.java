@@ -5,6 +5,7 @@ public class EmailConstants {
     public static final String FROM_EMAIL = "da.boncea@365.univ-ovidius.ro";
     public static final String CC_EMAIL = "";
     public static final String EMAIL_SUBJECT = "Confirmare email";
+    public static final String EMAIL_SUBJECT_Anunt = "Anunt adoptie";
     public static final String DEBUG = "mail.debug";
     public static final String GRID_SMTP_SERVER = "smtp.sendgrid.net";
     public static final String SMTP_HOST = "mail.smtp.host";

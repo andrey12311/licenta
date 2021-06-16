@@ -1,6 +1,7 @@
 package com.andrei.licenta.controller;
 
 import com.andrei.licenta.exceptions.ExceptionHandling;
+import com.andrei.licenta.exceptions.UserNotFoundException;
 import com.andrei.licenta.model.Anunt;
 import com.andrei.licenta.model.HttpResponse;
 import com.andrei.licenta.model.user.User;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,5 +57,14 @@ public class UserController extends ExceptionHandling {
         List<Anunt> anunturileMele = userService.getAnunturi(user);
 
         return new ResponseEntity<>(anunturileMele, OK);
+    }
+
+    @PostMapping("/delete-account")
+    public ResponseEntity<User> deleteAccount(@RequestBody User user)
+            throws UserNotFoundException, MessagingException {
+
+        User deletedUser = userService.deleteAccount(user);
+
+        return new ResponseEntity<>(deletedUser,OK);
     }
 }

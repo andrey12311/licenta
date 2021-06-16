@@ -110,19 +110,19 @@ public class User implements Serializable {
         this.authorities = authorities;
     }
 
-    public Boolean isNonLocked() {
+    public Boolean getIsNonLocked() {
         return isNonLocked;
     }
 
-    public void setNonLocked(Boolean nonLocked) {
+    public void setIsNonLocked(Boolean nonLocked) {
         isNonLocked = nonLocked;
     }
 
-    public Boolean isActive() {
+    public Boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(Boolean active) {
+    public void setIsActive(Boolean active) {
         isActive = active;
     }
 

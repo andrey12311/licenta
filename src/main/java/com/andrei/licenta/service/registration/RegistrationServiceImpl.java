@@ -58,8 +58,8 @@ public class RegistrationServiceImpl implements RegistrationService {
         user.setLastName(lastName);
         user.setEmail(email);
         user.setPassword(encodedPassword);
-        user.setActive(false);
-        user.setNonLocked(true);
+        user.setIsActive(false);
+        user.setIsNonLocked(true);
         user.setRole(Role.ROLE_USER.name());
         user.setAuthorities(Role.ROLE_USER.getAuthorities());
         userRepository.save(user);
@@ -76,19 +76,37 @@ public class RegistrationServiceImpl implements RegistrationService {
         return user;
     }
 
+    @Override
+    public User createAdmin(){
+        User user = new User();
+        String encodedPassword = encodePassword("admin");
+
+        user.setFirstName("Boncea");
+        user.setLastName("Andrei");
+        user.setEmail("bonceaandrei2000@gmail.com");
+        user.setPassword(encodedPassword);
+        user.setIsActive(true);
+        user.setIsNonLocked(true);
+        user.setRole(Role.ROLE_ADMIN.name());
+        user.setAuthorities(Role.ROLE_ADMIN.getAuthorities());
+        userRepository.save(user);
+
+        return user;
+    }
+
     @Transactional
     public void confirmToken(String token)
             throws TokenAlreadyConfirmedException, TokenExpiredException {
 
         ConfirmationToken confirmationToken = confirmationTokenService.getToken(token);
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new TokenAlreadyConfirmedException("");
+            throw new TokenAlreadyConfirmedException("Mail deja confirmat");
         }
 
         LocalDate expiredAt = confirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDate.now())) {
-            throw new TokenExpiredException("");
+            throw new TokenExpiredException("Acest link nu mai exista");
         }
 
         confirmationTokenService.setConfirmedAt(token);
@@ -96,8 +114,9 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     }
 
+
+
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
-
 }

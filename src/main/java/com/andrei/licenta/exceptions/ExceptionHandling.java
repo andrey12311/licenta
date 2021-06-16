@@ -69,17 +69,17 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(BAD_REQUEST,exception.getMessage());
     }
 
-//    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-//    public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
-//        HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
-//        return createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
-//    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
-        LOGGER.error(exception.getMessage());
-        return createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+        HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
+        return createHttpResponse(METHOD_NOT_ALLOWED, String.format(METHOD_IS_NOT_ALLOWED, supportedMethod));
     }
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
+//        LOGGER.error(exception.getMessage());
+//        return createHttpResponse(INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
+//    }
 
 
 //    @ExceptionHandler(NotAnImageFileException.class)
@@ -92,6 +92,7 @@ public class ExceptionHandling implements ErrorController {
     public ResponseEntity<HttpResponse> anuntNotFoundException(Exception e){
         return createHttpResponse(NOT_FOUND,e.getMessage());
     }
+
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<HttpResponse> notFoundException(NoResultException exception) {
         LOGGER.error(exception.getMessage());
@@ -117,6 +118,16 @@ public class ExceptionHandling implements ErrorController {
     @ExceptionHandler(TokenAlreadyConfirmedException.class)
     public ResponseEntity<HttpResponse> tokenAlreadyConfirmedException(){
         return createHttpResponse(BAD_REQUEST,"Acest email a fost deja verificat");
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<HttpResponse> userNotFoundException(){
+        return createHttpResponse(NOT_FOUND,"Utilizatorul nu a fost gasit");
+    }
+
+    @ExceptionHandler(SessionExpiredException.class)
+    public ResponseEntity<HttpResponse> sessionExpiredException(){
+        return createHttpResponse(BAD_REQUEST,"Sesiunea a expirat va rugam sa va autentificati.");
     }
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {

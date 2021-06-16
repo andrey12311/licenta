@@ -39,7 +39,7 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return user.isNonLocked();
+        return user.getIsNonLocked();
     }
 
     @Override
@@ -49,6 +49,11 @@ public class AppUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return user.isActive();
+        return user.getIsActive();
     }
+
+    public Long getUserId(){
+        return this.user.getId();
+    }
+
 }
